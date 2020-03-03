@@ -5,6 +5,7 @@ import kodijson
 import json
 import os
 import time
+import datetime
 
 from prometheus_client import start_http_server
 from prometheus_client import Gauge
@@ -64,8 +65,14 @@ while True:
   else:
     m_playing.set(0)
 
-  m_video_count.labels('movie').set(movie_count())
-  m_video_count.labels('tvshows').set(tv_count())
-  m_video_count.labels('episodes').set(episode_count())
+  minute = datetime.datetime.now().minute
+  if minute % 15 == 0:
+    m_video_count.labels('movie').set(movie_count())
+
+  if minute % 15 == 5:
+    m_video_count.labels('tvshows').set(tv_count())
+
+  if minute % 15 == 10:
+    m_video_count.labels('episodes').set(episode_count())
 
   time.sleep(60)
