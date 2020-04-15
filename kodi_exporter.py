@@ -27,11 +27,17 @@ m_playing = Gauge('kodi_playing', 'something is playing')
 m_video_count = Gauge('kodi_video_count', 'number of items in the library', ['type'])
 
 def playing():
-  speed = k.Player.GetProperties(playerid=1, properties=['speed', 'time'])
-  loaded = k.Player.GetItem(playerid=1)
+  players = k.Player.GetActivePlayers()
   result = {
     "playing": False
   }
+
+  if len(players['result']) == 0:
+    return result
+
+  player_id = players['result'][0]['playerid']
+  speed = k.Player.GetProperties(playerid=player_id, properties=['speed', 'time'])
+  loaded = k.Player.GetItem(playerid=player_id)
 
   if speed['result']['speed'] > 0:
     result['playing'] = True
